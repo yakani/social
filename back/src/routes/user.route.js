@@ -1,0 +1,13 @@
+import {Router} from 'express';
+import protect from '../midlleware/token.verification.js';
+import upload from '../lib/multer.js';
+import { Login , Logout, Signup , Checkuser, Updatepic, UpdateUser, GetAlluser } from '../controllers/user.controller.js';
+const router = Router();
+router.post('/login',Login);
+router.post('/signup',Signup);
+router.post('/logout',Logout);
+router.get('/all',protect,GetAlluser);
+router.get('/',protect,Checkuser);
+router.put('/',protect,UpdateUser);
+router.put('/avatar',protect,upload, Updatepic);
+export default router;

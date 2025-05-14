@@ -1,0 +1,10 @@
+import {Router} from 'express';
+import protect from '../midlleware/token.verification.js';
+import {createFile ,  getFileByuser, deleteFile, getAllFiles} from "../controllers/file.controller.js";
+import upload from '../lib/multer.js';
+const router = Router();
+router.post('/',protect,upload, createFile);
+router.get('/user',protect,getFileByuser);
+router.get('/',getAllFiles);
+router.delete('/:id',protect,deleteFile);
+export default router;
