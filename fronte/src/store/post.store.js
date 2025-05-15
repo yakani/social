@@ -14,24 +14,30 @@ export const Poststore = create((set,get)=>({
     numb:0,
 
     setnumb : (num)=> set({numb:num}),
+    previousplay :()=>{
+        const {playingpost  , numb , posts } = get();
+        for(var  i = numb ;  i >= 0; i++){
+            console.log(numb);
+            if( posts[i]._id == playingpost._id){
+                if(i  == numb)
+                {
+                set({numb:numb - 3});
+                }
+                set({playingpost:posts[i-1]});
+            break;
+        }}
+    },
 
     nexplay : ()=>{
         const {playingpost  , numb , posts } = get();
         for(var  i = numb ;  i <posts.length; i++){
             if( posts[i]._id == playingpost._id){
                 
-                if(i == posts.length - 1)
-            {
-                set({numb:0});
-                set({playingpost:posts[0]});
-                break;
-            }else if( i == numb +2){
+            if( i == numb +2){
                     set({numb:numb+3});
-                    set({playingpost:posts[i+1]});
-            }else{
-                set({playingpost:posts[i+1]});
-        
             }
+            set({playingpost:posts[i+1]});
+            break;
         }
     }
     },

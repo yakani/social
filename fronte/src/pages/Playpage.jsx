@@ -7,13 +7,16 @@ import { Commentstore } from '../store/comment.store';
 import Messageinput from '../component/Messageinput';
 import { MoveRightIcon, X } from 'lucide-react';
 const Playpage = () => {
-    const {playingpost , nexplay} = Poststore();
+    const {playingpost , nexplay , posts ,previousplay } = Poststore();
     const {comments ,listencomment ,stoplisten , getcomments , isloadingcomment} = Commentstore();
     const [goal ,setgoal] = useState(comments);
     const [play,setplay] = useState(playingpost);
     const navigate  = useNavigate();
   const Go = ()=>{
     nexplay();
+  }
+  const Pre = ()=>{
+    previousplay();
   }
 useEffect(()=>{
 setplay(playingpost);
@@ -28,7 +31,7 @@ return ()=>stoplisten();
     },[comments]);
   return (
     <div className='flex justify-center bg-neutral h-screen '>
-        <div className='flex flex-col bg-primary-content rounded-lg p-1 max-h-[90vh]'>
+        <div className='flex flex-col bg-primary/10 rounded-lg p-1 max-h-[90vh]'>
       <div className='rounded-lg m-1'>
         {play.path ? 
             <Reactplayer
@@ -63,7 +66,7 @@ return ()=>stoplisten();
             <div className='flex justify-center mt-4'>
         {/* Open the modal using document.getElementById('ID').showModal() method */}
 
-<label htmlFor="my_modal_7" className="btn">add comments</label>
+<label htmlFor="my_modal_7" className="btn">comments</label>
 <input type="checkbox" id="my_modal_7" className="modal-toggle" />
   <div className="modal" role="dialog">
     <div className="modal-box">
@@ -78,13 +81,20 @@ return ()=>stoplisten();
     <label className="modal-backdrop" htmlFor="my_modal_7">Close</label>
   </div>
       </div>
+            <div className='flex justify-center rounded-full  max-h-[50px] items-center mt-3 ' >
+            {
+         posts.length > 1? <> <button className="join-item btn btn-outline btn-warning"
+          onClick={Pre}
+          disabled={posts[0]._id  == playingpost._id}>Previous</button>
+  <button className="join-item btn btn-outline btn-warning" 
+  disabled={posts[posts.length-1]._id  == playingpost._id}
+  onClick={Go}>Next</button></> :<></>
+        }
+      </div>
       </div>
       <div className='flex flex-col items-center p-3 cursor-pointer' >
           <div className='flex justify-center rounded-full bg-warning max-h-[50px] items-center' onClick={()=>navigate("/")}>
         <X className='size-10  m-2 '/>
-      </div>
-      <div className='flex justify-center rounded-full bg-warning max-h-[50px] items-center m-1 'onClick={Go} >
-        <MoveRightIcon className='size-10  m-2 '/>
       </div>
       </div>
     
