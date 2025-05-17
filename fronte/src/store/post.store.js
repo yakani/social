@@ -11,9 +11,12 @@ export const Poststore = create((set,get)=>({
     posts:[],
     postuser:[],
     playingpost:null,
-    numb:0,
+    numb: parseInt(localStorage.getItem('numb') ) || 0,
 
-    setnumb : (num)=> set({numb:num}),
+    setnumb : (num)=>{
+        localStorage.setItem('numb',String(num));
+       set({numb:num}) ;
+    } ,
     previousplay :()=>{
         const {playingpost  , numb , posts } = get();
         for(var  i = numb ;  i >= 0; i++){
@@ -21,11 +24,13 @@ export const Poststore = create((set,get)=>({
             if( posts[i]._id == playingpost._id){
                 if(i  == numb)
                 {
+                    localStorage.setItem('numb', String(numb-3));
                 set({numb:numb - 3});
                 }
                 set({playingpost:posts[i-1]});
             break;
         }}
+        
     },
 
     nexplay : ()=>{
@@ -34,12 +39,15 @@ export const Poststore = create((set,get)=>({
             if( posts[i]._id == playingpost._id){
                 
             if( i == numb +2){
-                    set({numb:numb+3});
+                localStorage.setItem('numb',String(numb+3));
+                set({numb:numb+3});
+                    
             }
             set({playingpost:posts[i+1]});
             break;
         }
     }
+     
     },
     createPost: async (data)=>{
        
