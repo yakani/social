@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useEffect} from 'react'
 import Sidebar from '../component/Sidebar'
 import Chatcontainer from '../component/Chatcontainer'
 import Nochat from '../component/Nochat'

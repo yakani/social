@@ -35,12 +35,12 @@ const createMessage = asyncHandler(async (req, res) => {
         });
         const receverid = getusersocketid(req.params.id);
         if(receverid){
-            io.to(receverid).emit("msg",message);
+            io.to(receverid).emit("msg",message,req.user.name);
         }
         res.status(201).json(message);
         
     } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error });
     }
 });
 const getMessages = asyncHandler(async (req, res) => {

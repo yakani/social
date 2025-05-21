@@ -1,6 +1,7 @@
 import {create } from 'zustand'
 import { axiosInstance } from '../lib/axios';
 import { Userstore } from './user.store';
+import toast from 'react-hot-toast';
 export const Messagestore = create((set,get)=>({
     messages:[],
     isloadingmessage:false,
@@ -49,9 +50,15 @@ export const Messagestore = create((set,get)=>({
         const {recever} = get();
         if(!recever) return ;
        const sock =  Userstore.getState().socket;
-       sock.on("msg",(msg)=>{
-        if(msg.sender != recever._id)return;
+       sock.on("msg",(msg,name)=>{
+       // console.log("yes");
+        if(msg.sender != recever._id){
+            
+            toast.success(`${name} : ${msg.content ? msg.content : "image"}`);
+            return;
+        };
         set({messages:[...get().messages,msg]});
+
        })
     },
     stoplisten:()=>{

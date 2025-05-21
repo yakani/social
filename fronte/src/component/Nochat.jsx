@@ -1,6 +1,9 @@
-import React from 'react'
+import React ,{useEffect} from 'react'
+
 import { MessageSquare } from 'lucide-react'
+import { Messagestore } from '../store/message.store';
 const Nochat = () => {
+ 
   return (
     <div className="w-full flex flex-1 flex-col max-h-[500px] items-center justify-center p-16 bg-primary/10">
       <div className="max-w-md text-center space-y-6">

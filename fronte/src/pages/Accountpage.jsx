@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import { Userstore } from '../store/user.store'
 import { Poststore } from '../store/post.store';
-import { Camera, Search, Trash2Icon } from 'lucide-react';
+import { Camera, Pencil, Search, Trash2Icon, X } from 'lucide-react';
 import Present from '../component/Present';
 import Presentskeleton from '../component/skeleton/presentskeleton';
 import toast from 'react-hot-toast';
 import {useNavigate} from 'react-router';
 const Accountpage = () => {
-    const {user , isupdating, Updatepic} = Userstore();
+    const {user , isupdating, Updatepic ,Updateuser} = Userstore();
     const {isloadingpostuser , postuser ,deletepost} = Poststore();
     const navigate  = useNavigate();
     const [goal, setgoal] = useState(postuser);
     const skeletonContacts = Array(3).fill(null);
     const [selectedImg, setSelectedImg] = useState(user.avatar || "/avatar.png");
     const [name , setname] = useState(user.name);
+    const [editMode, setEditMode] = useState(false);
     useEffect(()=>{
         setgoal(postuser);
     },[postuser]);
@@ -70,7 +71,23 @@ const handleImageUpload = async (e) => {
               {isupdating ? "Uploading..." : "Click the camera icon to update your photo"}
             </p>
           </div>
-          <p className='text-2xl text-primary-content text-center'>{user.name}</p>
+          <div className='flex justify-center'>
+            {
+              editMode ? <>
+                <label htmlFor="" className='flex'>
+                  <input type="text" id="" placeholder={user.name} className='p-2 w-full text-lg text-primary-content' value={name} onChange={(e)=>setname(e.target.value)}/>
+                  <button className='btn btn-lg btn-warning' onClick={async ()=>{await Updateuser({name}) ; setEditMode(false)}}>
+                    Update
+                  </button>
+                </label>
+                <X className='size-5 text-warning m-1 cursor-pointer' onClick={()=>setEditMode(false)}  />
+              </> : <>
+              <p className='text-2xl text-primary-content text-center'>{user.name}</p>
+            <Pencil className='size-5 text-warning m-1 cursor-pointer' onClick={()=>setEditMode(true)} /></>
+            }
+            
+          </div>
+          
 <div className='flex justify-center'>
 <p className='text-primary-content text-xl'></p>
 <p className='text-primary-content text-xl'></p>
