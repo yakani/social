@@ -7,23 +7,106 @@ const Sidebar = () => {
   const { setricever, recever } = Messagestore();
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
   const {onlineuser , alluser , getalluser , isloading } = Userstore();
+   const [filteredUsers, setFilteredUsers] = useState(alluser);
+   const [isOpen, setIsOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   useEffect(()=>{
     getalluser();
-  },[getalluser])
-  const filteredUsers = showOnlineOnly
-  ? alluser.filter((user) => onlineuser.includes(user._id))
-  : alluser;
+  },[getalluser]);
+    useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768); // Tailwind's 'md' breakpoint is 768px
+      if (window.innerWidth >= 768) {
+        setIsOpen(true); // Always show sidebar on desktop
+      } else {
+        setIsOpen(false); // Hide sidebar on mobile by default
+      }
+    };
 
+    // Initial check
+    checkIfMobile();
+
+    // Add event listener for window resize
+    window.addEventListener('resize', checkIfMobile);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, []);
+    useEffect(() => {
+    const filtered = showOnlineOnly
+      ? alluser.filter((user) => onlineuser.includes(user._id))
+      : alluser;
+    setFilteredUsers(filtered);
+  }, [showOnlineOnly, alluser, onlineuser]);
+  const toggleSidebar = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handlefilter  = (e)=>{
+    const searchTerm = e.target.value.toLowerCase();
+       if (searchTerm) {
+      const filtered = alluser.filter(user =>
+        user.name.toLowerCase().includes(searchTerm)
+      );
+      setFilteredUsers(filtered);
+    } else {
+      const filtered = showOnlineOnly
+        ? alluser.filter((user) => onlineuser.includes(user._id))
+        : alluser;
+      setFilteredUsers(filtered);
+    }
+  };
   if(isloading) return <Sidebarskeleton/>
-  return (
-    <aside className="max-h-[500px] w-20 lg:w-72  m-2 bg-primary/10 rounded-lg  flex flex-col transition-all duration-200">
+  return (<>
+
+        {isMobile && (
+        <button
+          onClick={toggleSidebar}
+          className=" z-50 m-4 btn-lg max-h-[70px] p-2 rounded-md bg-gray-800 text-white md:hidden"
+        >
+          {isOpen ? (
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          ) : (
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          )}
+        </button>
+      )}
+    <aside    className={`
+          fixed md:static z-40 top-0 left-0  ${isMobile ? 'max-h-[600px]' : ' overflow-y-auto'} 
+          ${isMobile ? 'w-full' : 'w-72'}
+          ${isOpen ? 'translate-x-0 w-72' : '-translate-x-full md:translate-x-0 md:w-20'} 
+          border-r border-base-300 flex flex-col transition-all duration-200 bg-base-100
+        `}>
+      
+      <div>
+        <label className="input">
+  <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <g
+      strokeLinejoin="round"
+      strokeLinecap="round"
+      strokeWidth="2.5"
+      fill="none"
+      stroke="currentColor"
+    >
+      <circle cx="11" cy="11" r="8"></circle>
+      <path d="m21 21-4.3-4.3"></path>
+    </g>
+  </svg>
+  <input type="search" required placeholder="Search" onChange={(e)=>handlefilter(e)} />
+</label>
+      </div>
+      
       <div className="  w-full p-5">
         <div className="flex items-center gap-2">
           <Users className="size-6 text-warning"  />
-          <span className="font-medium hidden text-primary-content lg:block">Contacts</span>
+          <span className="font-medium  text-primary-content lg:block">Contacts</span>
         </div>
      
-        <div className="mt-3 hidden lg:flex items-center gap-2">
+        <div className="mt-3  lg:flex items-center gap-2">
           <label className="cursor-pointer flex items-center gap-2">
             <input
               type="checkbox"
@@ -41,9 +124,12 @@ const Sidebar = () => {
         {filteredUsers.map((user) => (
           <button
             key={user._id}
-            onClick={() => setricever(user)}
+            onClick={() => {
+             setricever(user) ;
+              if (isMobile) setIsOpen(false);
+            } }
             className={`
-              w-full p-3 flex items-center gap-3 cursor-pointer
+              w-full p-3 flex items-center  gap-3 cursor-pointer
               hover:bg-warning/20 transition-colors
               ${recever?._id === user._id ? " bg-warning/10 ring-1 ring-base-300" : ""}
             `}
@@ -63,7 +149,7 @@ const Sidebar = () => {
             </div>
 
             {/* User info - only visible on larger screens */}
-            <div className="hidden lg:block text-left min-w-0  ">
+            <div className=" text-left min-w-0  ">
               <div className="font-medium text-primary-content">{user.name}</div>
               <div className="text-sm text-primary-content">
                 {onlineuser.includes(user._id) ? "Online" : "Offline"}
@@ -77,6 +163,12 @@ const Sidebar = () => {
         )}
       </div>
     </aside>
+         {isMobile && isOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black bg-opacity-50 md:hidden"
+          onClick={toggleSidebar}
+        />
+      )}</>
   
   )
 }

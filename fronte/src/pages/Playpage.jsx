@@ -5,7 +5,7 @@ import Reactplayer from 'react-player';
 import Showmessage from '../component/Showmessage';
 import { Commentstore } from '../store/comment.store';
 import Messageinput from '../component/Messageinput';
-import { MoveRightIcon, X } from 'lucide-react';
+import { HeartHandshakeIcon, HeartIcon, MoveRightIcon, SaveIcon, SaveOff, X } from 'lucide-react';
 const Playpage = () => {
     const {playingpost , nexplay , posts ,previousplay } = Poststore();
     const {comments ,listencomment ,stoplisten , getcomments , isloadingcomment} = Commentstore();
@@ -30,9 +30,9 @@ return ()=>stoplisten();
         setgoal(comments);
     },[comments]);
   return (
-    <div className='flex justify-center bg-neutral h-screen '>
-        <div className='flex flex-col bg-primary/10 rounded-lg p-1 max-h-[90vh]'>
-      <div className='rounded-lg m-1'>
+    <div className='flex justify-center bg-neutral min-h-screen '>
+        <div className='flex flex-col bg-primary/10 rounded-lg p-1 max-h-[95vh]'>
+      <div className='rounded-lg m-1 flex justify-center items-center'>
         {play.path ? 
             <Reactplayer
                 url={
@@ -81,7 +81,7 @@ return ()=>stoplisten();
     <label className="modal-backdrop" htmlFor="my_modal_7">Close</label>
   </div>
       </div>
-            <div className='flex justify-center rounded-full  max-h-[50px] items-center mt-3 ' >
+            <div className='flex justify-between rounded-full  max-h-[50px] items-center mt-3 ' >
             {
          posts.length > 1? <> <button className="join-item btn btn-outline btn-warning"
           onClick={Pre}
@@ -96,6 +96,13 @@ return ()=>stoplisten();
           <div className='flex justify-center rounded-full bg-warning max-h-[50px] items-center' onClick={()=>navigate("/")}>
         <X className='size-10  m-2 '/>
       </div>
+      <div>
+        <HeartIcon className='size-10 m-2 text-warning'/>
+      </div>
+      <div>
+        <SaveIcon className='size-10 m-2 text-warning'/>
+      </div>
+      <div></div>
       </div>
     
       

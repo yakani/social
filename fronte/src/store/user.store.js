@@ -3,6 +3,7 @@ import { axiosInstance } from '../lib/axios';
 import {io } from 'socket.io-client';
 import toast from 'react-hot-toast';
 import { Poststore } from './post.store';
+import Followers from '../../../back/src/models/follower.model';
 export const  Userstore = create((set,get)=>({
 user:null,
 isentring:false,
@@ -13,6 +14,9 @@ isloading:false,
 onlineuser:[],
 socket:null,
 alluser:[],
+Following:[],
+Followers:[],
+isloadingfollowers:false,
 
 Register : async(data)=>{
     set({isentring:true});
@@ -124,5 +128,44 @@ connectsocket:()=>{
     }finally{
         set({isloading:false}); 
     }
-}
+},
+getPeoplefollowing:async()=>{
+    set({isloadingfollowers:true});
+    try {
+        const res  = await axiosInstance.get('follow/following');
+        set({Following:res.data});
+    } catch (error) {
+        console.log(error.message);
+    }finally{
+        set({isloadingfollowers:false}); 
+    }
+},
+getPeoplefollowers:async()=>{
+    set({isloadingfollowers:true});
+    try {
+        const res  = await axiosInstance.get('follow/followers');
+        set({Followers:res.data});
+    } catch (error) {
+        console.log(error.message);
+    }finally{
+        set({isloadingfollowers:false}); 
+    }},
+    unfollow:async(id)=>{
+        try {
+            const res  = await axiosInstance.delete('follow/unfollow',id);
+            set({Following:get().Following.filter(f=>f._id !== id.Author)});
+            toast.success("unfollowed");
+        } catch (error) {
+            toast.error(error.message);
+        }
+    },
+    follow:async(id)=>{
+        try {
+            const res  = await axiosInstance.post('follow/follow',id);
+            set({Following:[...get().Following,res.data]});
+            toast.success("followed");
+        } catch (error) {
+            toast.error(error.message);
+        }
+    },
 }));

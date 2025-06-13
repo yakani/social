@@ -7,18 +7,26 @@ import Presentskeleton from '../component/skeleton/presentskeleton';
 import toast from 'react-hot-toast';
 import {useNavigate} from 'react-router';
 const Accountpage = () => {
-    const {user , isupdating, Updatepic ,Updateuser} = Userstore();
+    const {user , isupdating, Updatepic ,Updateuser , getPeoplefollowing , getPeoplefollowers , Following , Followers} = Userstore();
     const {isloadingpostuser , postuser ,deletepost} = Poststore();
     const navigate  = useNavigate();
     const [goal, setgoal] = useState(postuser);
     const skeletonContacts = Array(3).fill(null);
     const [selectedImg, setSelectedImg] = useState(user.avatar || "/avatar.png");
+    const [follow ,setfollow] = useState(Following);
+    const [follower ,setfollower] = useState(Followers);
     const [name , setname] = useState(user.name);
     const [editMode, setEditMode] = useState(false);
     useEffect(()=>{
         setgoal(postuser);
+        getPeoplefollowing();
+        getPeoplefollowers();
     },[postuser]);
-    
+
+    useEffect(()=>{
+        setfollow(Following);
+        setfollower(Followers);
+    },[Following, Followers]);
 
 const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -72,6 +80,7 @@ const handleImageUpload = async (e) => {
             </p>
           </div>
           <div className='flex justify-center'>
+
             {
               editMode ? <>
                 <label htmlFor="" className='flex'>
@@ -86,11 +95,12 @@ const handleImageUpload = async (e) => {
             <Pencil className='size-5 text-warning m-1 cursor-pointer' onClick={()=>setEditMode(true)} /></>
             }
             
+
           </div>
           
-<div className='flex justify-center'>
-<p className='text-primary-content text-xl'></p>
-<p className='text-primary-content text-xl'></p>
+<div className='flex justify-center m-1'>
+<button className='btn  btn-outline m-1'>{`${follower.length}${follower.length /1000 >= 1 ? "k":"" }  Followers`}</button>
+<button className='btn  btn-outline m-1'>{`${follow.length}${follow.length /1000 >= 1 ? "k":"" } Following`}</button>
 </div>
 
 <div className='flex justify-center flex-wrap bg-primary/10'>
@@ -98,9 +108,9 @@ const handleImageUpload = async (e) => {
     <Search className='w-24 h-24 text-warning m-2'/>
     <button className='btn btn-lg btn-warning m-2' onClick={()=>navigate('/add')} >Add a post</button>
     </div>:goal.map((t)=><div key={t._id} className='flex flex-col justify-center  items-center'>
-      <Trash2Icon className='size-5 text-warning cursor-pointer' onClick={()=>deletepost(t._id)}/>
-      <Present post={t} /></div>)}
-    
+
+      <Present post={t} admin={true} func={deletepost} /></div>)}
+
     </div>
 </div>
   )
