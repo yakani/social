@@ -5,13 +5,12 @@ import { Poststore } from '../store/post.store'
 import { ArrowDownLeftFromCircle } from 'lucide-react'
 
 const Homepage = () => {
-  const { isloadingpost , posts ,numb  ,setnumb} = Poststore();
+  const { isloadingpost , posts ,numb  ,setnumb } = Poststore();
   const [num,setnum] = useState(numb);
   const [all,setall] = useState(posts);
   const n = all.filter((t , indx)=> indx >= numb && indx < numb+3);
   const [goal ,setgoal ] = useState(n);
   const skeletonContacts = Array(3).fill(null);
-
   useEffect(()=>{
     setall(posts);
   },[posts]);

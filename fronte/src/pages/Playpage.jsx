@@ -5,10 +5,12 @@ import Reactplayer from 'react-player';
 import Showmessage from '../component/Showmessage';
 import { Commentstore } from '../store/comment.store';
 import Messageinput from '../component/Messageinput';
-import { HeartHandshakeIcon, HeartIcon, MoveRightIcon, SaveIcon, SaveOff, X } from 'lucide-react';
+import { Bookmark, BookMarkedIcon, HeartHandshakeIcon, HeartIcon, HeartPlusIcon, MessageCircle, MoveRightIcon, SaveIcon, SaveOff, X } from 'lucide-react';
+import { Userstore } from '../store/user.store';
 const Playpage = () => {
     const {playingpost , nexplay , posts ,previousplay } = Poststore();
     const {comments ,listencomment ,stoplisten , getcomments , isloadingcomment} = Commentstore();
+    const {user} = Userstore();
     const [goal ,setgoal] = useState(comments);
     const [play,setplay] = useState(playingpost);
     const navigate  = useNavigate();
@@ -44,29 +46,28 @@ return ()=>stoplisten();
             />:
            <img
                 src={play.thumbnail}
-                className='w-[300px] h-[300px]'
+                className='size-90 rounded-lg object-cover'
             />
             }
       </div>
-      <div className='flex justify-between m-2'>
+      <div className='flex justify-center item-center m-2'>
          <div className='flex flex-col '>
             <p className='text-2xl font-bold '> {play.title} </p>
             <p className='text-xl  ' > {play.prompt} </p>
       </div>
-      <div className="rating">
-  <input type="radio" name="rating-2" className="mask mask-star-2 bg-orange-400" aria-label="1 star" />
-  <input type="radio" name="rating-2" className="mask mask-star-2 bg-orange-400" aria-label="2 star" defaultChecked />
-  <input type="radio" name="rating-2" className="mask mask-star-2 bg-orange-400" aria-label="3 star" />
-  <input type="radio" name="rating-2" className="mask mask-star-2 bg-orange-400" aria-label="4 star" />
-  <input type="radio" name="rating-2" className="mask mask-star-2 bg-orange-400" aria-label="5 star" />
-</div>
+ 
       </div>
     
   
-            <div className='flex justify-center mt-4'>
-        {/* Open the modal using document.getElementById('ID').showModal() method */}
+            <div className='flex justify-between mt-4'>
+        {}
 
-<label htmlFor="my_modal_7" className="btn">comments</label>
+        <HeartIcon className='size-7 m-2 text-warning cursor-pointer'/>
+
+<label htmlFor="my_modal_7" >
+  <MessageCircle className='size-7 m-2 text-warning cursor-pointer' />
+</label>
+<Bookmark className='size-7 m-2 text-warning cursor-pointer' />
 <input type="checkbox" id="my_modal_7" className="modal-toggle" />
   <div className="modal" role="dialog">
     <div className="modal-box">
@@ -74,7 +75,15 @@ return ()=>stoplisten();
       <div className="skeleton h-20 w-20"></div> : 
       <>
         <Showmessage comment={goal.length  >= 0  ? goal : [goal]}/>
-     <Messageinput id={play._id}/>
+        {goal.length == 0 ? <p className='text-center'>No comments yet</p> : <></>}
+        <div className=' flex justify-between items-center'>
+         <img
+                src={user.avatar}
+                alt="Profile"
+                className="size-13 rounded-full object-cover border-1 "
+              /><Messageinput id={play._id}/>
+        </div>
+       
       </> }
       
   </div>
@@ -92,17 +101,10 @@ return ()=>stoplisten();
         }
       </div>
       </div>
-      <div className='flex flex-col items-center p-3 cursor-pointer' >
-          <div className='flex justify-center rounded-full bg-warning max-h-[50px] items-center' onClick={()=>navigate("/")}>
-        <X className='size-10  m-2 '/>
-      </div>
-      <div>
-        <HeartIcon className='size-10 m-2 text-warning'/>
-      </div>
-      <div>
-        <SaveIcon className='size-10 m-2 text-warning'/>
-      </div>
-      <div></div>
+      <div className='flex flex-col items-center p-3 cursor-pointer'  onClick={()=>navigate('/')}>
+          
+        <X className='size-7 hover:text-warning  m-2 '/>
+
       </div>
     
       
