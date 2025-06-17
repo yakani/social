@@ -71,14 +71,30 @@ try {
 }
 });
 const getFileByuser = asyncHandler(async (req,res)=>{
-        const { id } = req.params;
-        const file = await File.find({ sender : req.user._id});
+       try {
+        
+        const id =  req.user._id;
+        const file = await File.find({ sender : id }).populate('sender','avatar name email');
         res.status(201).json(file);
+       } catch (error) {
+        console.log(error);
+       } 
+});
+const getFileByvisitor = asyncHandler(async (req,res)=>{
+       try {
+        
+        const {id } =  req.params;
+        const file = await File.find({ sender : id }).populate('sender','avatar name email');
+        res.status(201).json(file);
+       } catch (error) {
+      
+        res.status(500).json({message:error});
+       } 
 });
 
 const getAllFiles = asyncHandler(async (req,res)=>{
 
-    const file = await File.find({}).populate('sender','avatar name email');
+    const file = await File.find({$nor:[{sender:req.user._id}]}).populate('sender','avatar name email');
 
     res.status(201).json(file ? file :[]);
 });
@@ -95,5 +111,6 @@ export {
     createFile,
     getAllFiles,
     getFileByuser,
+    getFileByvisitor,
     deleteFile
 }

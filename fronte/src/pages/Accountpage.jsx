@@ -6,6 +6,7 @@ import Present from '../component/Present';
 import Presentskeleton from '../component/skeleton/presentskeleton';
 import toast from 'react-hot-toast';
 import {useNavigate} from 'react-router';
+import List from '../component/List';
 const Accountpage = () => {
     const {user , isupdating, Updatepic ,Updateuser , getPeoplefollowing , getPeoplefollowers , Following , Followers} = Userstore();
     const {isloadingpostuser , postuser ,deletepost} = Poststore();
@@ -96,7 +97,7 @@ const handleImageUpload = async (e) => {
                               </label>
                           
                               <button
-                                className="btn btn-primary w-full"
+                                className="btn btn-warning w-full"
                                 onClick={() => {
                                   Updateuser({ name });
                                   
@@ -112,9 +113,26 @@ const handleImageUpload = async (e) => {
                   </div>
       
 <div className='flex justify-center m-1'>
-<button className='btn  btn-outline btn-warning m-1'>{`${follower.length}${follower.length /1000 >= 1 ? "k":"" }  Followers`}</button>
-<button className='btn  btn-outline btn-warning m-1'>{`${follow.length}${follow.length /1000 >= 1 ? "k":"" } Following`}</button>
+
+<label htmlFor='my_modal_2'><p className='btn  btn-outline btn-warning m-1'>{`${follower.length}${follower.length /1000 >= 1 ? "k":"" } Followers`}</p></label>
+
+<input type="checkbox" id="my_modal_2" className="modal-toggle" />
+<div className="modal" role="dialog">
+  <div className="modal-box">
+         {follower.length < 2 ? <p className='text-xl text-center '>No Followers </p> : <List title="Followers" items={follower} /> } 
+  </div>
+  <label className="modal-backdrop" htmlFor="my_modal_2">Close</label>
 </div>
+
+<label htmlFor='my_modal_1'><p className='btn  btn-outline btn-warning m-1'> {`${follow.length}${follow.length /1000 >= 1 ? "k":"" }  Following`}</p></label>
+{/* Put this part before </body> tag */}
+<input type="checkbox" id="my_modal_1" className="modal-toggle" />
+<div className="modal" role="dialog">
+  <div className="modal-box">
+         {follow.length < 2 ? <p className='text-xl text-center '> Following  No body </p> : <List title="Following" items={follow} /> } 
+  </div>
+  <label className="modal-backdrop" htmlFor="my_modal_1">Close</label>
+</div></div>
  <div className="pb-3">
               <div className="flex border-b border-warning px-4 justify-between">
                 <a className={`flex flex-col items-center justify-center border-b-[3px] ${editMode ? "border-b-transparent":"border-b-warning"}   pb-[13px] pt-4 flex-1`} href="#" onClick={()=>setEditMode(false)}>

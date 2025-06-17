@@ -16,6 +16,8 @@ socket:null,
 alluser:[],
 Following:[],
 Followers:[],
+followervistor:[],
+followingvistor:[],
 isloadingfollowers:false,
 
 Register : async(data)=>{
@@ -150,16 +152,37 @@ getPeoplefollowers:async()=>{
     }finally{
         set({isloadingfollowers:false}); 
     }},
+    getvisitorfollowing:async(data)=>{
+    set({isloadingfollowers:true});
+    try {
+        const res  = await axiosInstance.get('follow/visitorfl/'+data);
+        set({followingvistor:res.data});
+    } catch (error) {
+        console.log(error.message);
+    }finally{
+        set({isloadingfollowers:false}); 
+    }
+},
+getvisitorfollowers:async(data)=>{
+    set({isloadingfollowers:true});
+    try {
+        const res  = await axiosInstance.get('follow/visitorfw/'+data);
+        set({followervistor:res.data});
+    } catch (error) {
+        console.log(error.message);
+    }finally{
+        set({isloadingfollowers:false}); 
+    }},
     unfollow:async(id)=>{
         try {
             const res  = await axiosInstance.delete('follow/unfollow',id);
-            set({Following:get().Following.filter(f=>f._id !== id.Author)});
+            set({Following:get().Following.filter(f=>f._id != id.Author)});
             toast.success("unfollowed");
         } catch (error) {
             toast.error(error.message);
         }
     },
-    follow:async(id)=>{
+    follows:async(id)=>{
         try {
             const res  = await axiosInstance.post('follow/follow',id);
             set({Following:[...get().Following,res.data]});

@@ -3,9 +3,11 @@ import { Poststore } from '../store/post.store'
 import { useNavigate } from 'react-router';
 import { Commentstore } from '../store/comment.store';
 import { Trash2Icon } from 'lucide-react';
+import { Userstore } from '../store/user.store';
 
-const Present = ({post,admin=false ,func }) => {
-  const { setplayingpost } = Poststore();
+const Present = ({post,admin=false ,func , visit=false }) => {
+  const { setplayingpost ,getpostsvisitor } = Poststore();
+  const { getvisitorfollowing , getvisitorfollowers  ,getPeoplefollowing} = Userstore();
   const { getcomments} = Commentstore();
   const navigate  = useNavigate();
   const Go = ()=>{
@@ -35,12 +37,20 @@ const Present = ({post,admin=false ,func }) => {
       <div className='flex flex-col items-center justify-center gap-2'>
 
      
-      <img src={post.thumbnail} alt=""  className='w-[300px] h-[300px] rounded-xl' onClick={Go}/>
-      { !admin ?<> <img src={post.sender.avatar} alt=""  className='size-13 rounded-full object-cover border-1'/>
+      <img src={post.thumbnail} alt=""  className='size-60 rounded-lg object-cover ' onClick={Go}/>
+      { !admin && !visit ?<> <img src={post.sender.avatar} alt=""  className='size-13 rounded-full object-cover border-1 cursor-pointer'
+        onClick={()=>{// get comments for post
+          getpostsvisitor(post.sender._id);
+            getvisitorfollowing( post.sender._id );
+        getvisitorfollowers( post.sender._id);
+        getPeoplefollowing();
+          navigate('/visit');
+        }}
+      />
         
-        
+        <span className='className="text-center text-lg text-primary-content '>{post.sender.name}</span>
             <p className="text-center text-2xl text-primary-content overflow:hidden ">{post.title}</p>
-            <span className='className="text-center text-lg text-primary-content '>{post.sender.name}</span>
+            
         </>:<></>} </div>
     </div>
   )

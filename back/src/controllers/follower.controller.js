@@ -39,7 +39,8 @@ const unfollowUser = asyncHandler(async(req,res)=>{
     }
 });
 const getFollowers = asyncHandler(async (req, res) => {
-    const userId = req.user._id;
+ 
+    const userId =   req.user._id;
     try {
         const followers = await Followers.find({ Author: userId }).populate('Follower', 'name avatar');
         res.status(200).json(followers);
@@ -48,7 +49,8 @@ const getFollowers = asyncHandler(async (req, res) => {
     }
 });
 const getFollowing = asyncHandler(async (req, res) => {
-    const userId = req.user._id;
+    
+    const userId =  req.user._id;
     try {
         const following = await Followers.find({ Follower: userId }).populate('Author', 'name avatar');
         res.status(200).json(following);
@@ -56,4 +58,25 @@ const getFollowing = asyncHandler(async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-export { followUser, unfollowUser, getFollowers, getFollowing };
+const getFollowersvisitor = asyncHandler(async (req, res) => {
+
+    const userId =   req.params.id;
+    try {
+        const followers = await Followers.find({ Author: userId }).populate('Follower', 'name avatar');
+        res.status(200).json(followers);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+const getFollowingvisitor = asyncHandler(async (req, res) => {
+
+    const userId =  req.params.id;
+    try {
+        const following = await Followers.find({ Follower: userId }).populate('Author', 'name avatar');
+        res.status(200).json(following);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+export { followUser, unfollowUser, getFollowers, getFollowing , getFollowersvisitor, getFollowingvisitor };

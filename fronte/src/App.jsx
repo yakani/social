@@ -15,6 +15,7 @@ import Playpage from './pages/Playpage';
 import Chatpage from './pages/Chatpage';
 import Settingpage from './pages/Settingpage';
 import { useThemeStore } from './store/theme.store';
+import Profilepage from './pages/Profilepage';
 const App = () => {
 const { user  , ischecking ,Checkauth} = Userstore();
 const { getposts, getpostsuser} = Poststore();
@@ -43,6 +44,7 @@ if( !user && ischecking) return (
       <Route  path='/play' element={user ? <Playpage/> : <Navigate to={"/login"} />} />
       <Route path='/chat' element={user ? <Chatpage/> : <Navigate to={"/login"}/>}/>
       <Route path='/setting' element={user ? <Settingpage/> :<Navigate to={"/"} />} />
+        <Route path='/visit' element={user ? <Profilepage/>:<Navigate to={"/login"}/>}/>
       <Route path='*' element={<Navigate to={"/"} />} />
     </Routes>
     <Toaster/>

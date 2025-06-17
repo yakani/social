@@ -23,6 +23,7 @@ const Playpage = () => {
 useEffect(()=>{
 setplay(playingpost);
 getcomments(playingpost._id);
+window.scrollTo(0, 100);
   },[ playingpost]);
 useEffect(()=>{
 listencomment(playingpost._id);
@@ -32,8 +33,10 @@ return ()=>stoplisten();
         setgoal(comments);
     },[comments]);
   return (
-    <div className='flex justify-center bg-neutral min-h-screen '>
-        <div className='flex flex-col bg-primary/10 rounded-lg p-1 max-h-[95vh]'>
+    <div className='flex justify-center min-h-screen  ' 
+    style={{backgroundImage:`url(${play.thumbnail})`, backgroundSize:'cover' ,backgroundBlendMode:'darken', backgroundColor:'rgba(0, 0, 0, 0.5)',transitionBehavior:'opacity', 
+    opacity:0.9 ,transitionDuration:'0.3s' ,transitionTimingFunction:'ease-in-out'}}>
+        <div className='flex flex-col bg-neutral mt-2 rounded-lg p-1 max-h-[95vh]'>
       <div className='rounded-lg m-1 flex justify-center items-center'>
         {play.path ? 
             <Reactplayer
@@ -47,6 +50,7 @@ return ()=>stoplisten();
            <img
                 src={play.thumbnail}
                 className='size-90 rounded-lg object-cover'
+                style={{transitionTimingFunction:'ease-in-out', transitionDuration:'0.3s', transitionProperty:'opacity' , opacity:0.9}}
             />
             }
       </div>

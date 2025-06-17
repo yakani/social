@@ -8,6 +8,7 @@ export const Poststore = create((set,get)=>({
     isdeletingpost:false,
     isloadingpostuser:false,
     isadding:false,
+    postsvisitor:[],
     posts:[],
     postuser:[],
     playingpost:null,
@@ -85,6 +86,17 @@ export const Poststore = create((set,get)=>({
         try {
             const res = await axiosInstance.get('post/user');
             set({postuser: res.data});
+        } catch (error) {
+            console.log(error.message);
+        }finally{
+            set({isloadingpostuser:false});
+        }
+    },
+        getpostsvisitor:async(data)=>{
+        set({isloadingpostuser:true});
+        try {
+            const res = await axiosInstance.get('post/visitor/'+data);
+            set({postsvisitor: res.data});
         } catch (error) {
             console.log(error.message);
         }finally{
