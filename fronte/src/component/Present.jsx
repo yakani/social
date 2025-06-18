@@ -7,7 +7,7 @@ import { Userstore } from '../store/user.store';
 
 const Present = ({post,admin=false ,func , visit=false }) => {
   const { setplayingpost ,getpostsvisitor } = Poststore();
-  const { getvisitorfollowing , getvisitorfollowers  ,getPeoplefollowing} = Userstore();
+  const { getvisitorfollowing , getvisitorfollowers  ,getPeoplefollowing , Loadsavevisitor} = Userstore();
   const { getcomments} = Commentstore();
   const navigate  = useNavigate();
   const Go = ()=>{
@@ -44,6 +44,7 @@ const Present = ({post,admin=false ,func , visit=false }) => {
             getvisitorfollowing( post.sender._id );
         getvisitorfollowers( post.sender._id);
         getPeoplefollowing();
+        Loadsavevisitor(post.sender._id);
           navigate('/visit');
         }}
       />

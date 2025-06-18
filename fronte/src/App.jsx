@@ -17,11 +17,13 @@ import Settingpage from './pages/Settingpage';
 import { useThemeStore } from './store/theme.store';
 import Profilepage from './pages/Profilepage';
 const App = () => {
-const { user  , ischecking ,Checkauth} = Userstore();
+const { user  , ischecking ,Checkauth ,getsavesvideo ,getobservation} = Userstore();
 const { getposts, getpostsuser} = Poststore();
 const { theme} = useThemeStore();
 useEffect(()=>{
   getpostsuser();
+  getsavesvideo();
+  getobservation();
   getposts();
   Checkauth();
 },[Checkauth]);

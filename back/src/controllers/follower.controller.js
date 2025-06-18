@@ -28,7 +28,7 @@ const unfollowUser = asyncHandler(async(req,res)=>{
         throw new Error("Author is required");
     }
     try {
-        const flow = await Followers.findOneAndDelete({ Author, Follower });
+        const flow = await Followers.findByIdAndDelete(Author);
         if (!flow) {
             res.status(404).json({ message: "Follow relationship not found" });
         } else {
