@@ -128,7 +128,7 @@ export const Poststore = create((set, get) => ({
   Algo: () => {
     //i have to take the data from my observazion  and transform that to an array of prompt to initiate to my data2
     const { posts, numb } = get();
-    if (posts.length < 10) return;
+    if (posts.length < 10 || get().arralgo.length == 0) return;
     let previous = [];
     let arr = [];
     let maxnum =

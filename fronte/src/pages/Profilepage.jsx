@@ -27,9 +27,14 @@ const Profilepage = () => {
   const [follow, setfollow] = useState(followingvistor);
   const [follower, setfollower] = useState(followervistor);
   const [editMode, setEditMode] = useState(false);
-
+  const [img,setimg]= useState('/avatar.png');
+const [name,setname]= useState('');
+const [Id,setId]= useState('');
   useEffect(() => {
-    setgoal( editMode ? savesvisitors.saves : postsvisitor);
+    setgoal( editMode ? savesvisitors[0].saves : postsvisitor);
+    setimg(postsvisitor[0]?.sender?.avatar);
+    setname(postsvisitor[0]?.sender?.name);
+    setId(postsvisitor[0]?.sender?._id);
   }, [postsvisitor ,savesvisitors , editMode]);
 
   useEffect(() => {
@@ -37,7 +42,7 @@ const Profilepage = () => {
     setfollower(followervistor);
     setlist(Following.map((t) => t.Author._id));
   }, [followingvistor, followervistor, Following]);
-  if (isloadingpostuser || goal.length == 0 || isloadingsaves )
+  if (isloadingpostuser || (goal.length == 0 && !editMode) || isloadingsaves )
     return (
       <div className="flex justify-center items-center h-screen">
         <Loader className="size-10 animate-spin text-yellow-500" />
@@ -47,9 +52,10 @@ const Profilepage = () => {
   return (
     <div className=" flex justify-center flex-col bg-neutral min-h-screen">
       <div className="flex flex-col items-center gap-4">
+       
         <div className="relative">
           <img
-            src={goal[0].sender.avatar}
+            src={img}
             alt="Profile"
             className="size-32 rounded-full object-cover border-4 "
           />
@@ -58,7 +64,7 @@ const Profilepage = () => {
 
       <div className="flex flex-col items-center justify-center">
         <p className=" text-[22px] font-bold leading-tight tracking-[-0.015em] text-center">
-          {goal[0].sender.name}
+          {name}
         </p>
         <div className="flex justify-center gap-4 text-sm text-primary-content">
           <p className="">{`${follower.length}${
@@ -82,15 +88,15 @@ const Profilepage = () => {
         <button
           className="btn  btn-outline btn-warning m-1"
           onClick={() => {
-            list.includes(goal[0].sender._id)
+            list.includes(Id)
               ? unfollow({
                   Author: follower.filter((t) => t.Follower._id == user._id)[0]
                     ._id,
                 })
-              : follows({ Author: goal[0].sender._id });
+              : follows({ Author: Id });
           }}
         >{`${
-          list.includes(goal[0].sender._id) ? "Unfollow" : "Follow"
+          list.includes(Id) ? "Unfollow" : "Follow"
         }`}</button>
       </div>
       <div className="pb-3">

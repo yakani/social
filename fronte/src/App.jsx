@@ -18,13 +18,15 @@ import { useThemeStore } from './store/theme.store';
 import Profilepage from './pages/Profilepage';
 const App = () => {
 const { user  , ischecking ,Checkauth ,getsavesvideo ,getobservation} = Userstore();
-const { getposts, getpostsuser} = Poststore();
+const { getposts, getpostsuser , getarralgo , Algo} = Poststore();
 const { theme} = useThemeStore();
 useEffect(()=>{
   getpostsuser();
   getsavesvideo();
   getobservation();
   getposts();
+  getarralgo();
+  Algo();
   Checkauth();
 },[Checkauth]);
 if( !user && ischecking) return (

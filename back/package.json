@@ -11,6 +11,8 @@
   "author": "yakani",
   "license": "ISC",
   "dependencies": {
+    "@tensorflow/tfjs": "^4.22.0",
+    "aws-sdk": "^2.1692.0",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.6.1",
     "cookie-parser": "^1.4.7",
@@ -26,6 +28,7 @@
     "multer": "^2.0.1",
     "nodemailer": "^7.0.2",
     "nodemon": "^3.1.10",
+    "nsfwjs": "^4.2.1",
     "passport": "^0.7.0",
     "passport-google-oidc": "^0.1.0",
     "socket.io": "^4.8.1"
