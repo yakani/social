@@ -23,7 +23,6 @@ export const Poststore = create((set, get) => ({
   previousplay: () => {
     const { playingpost, numb, posts } = get();
     for (var i = numb; i >= 0; i++) {
-      console.log(numb);
       if (posts[i]._id == playingpost._id) {
         if (i == numb) {
           localStorage.setItem("numb", String(numb - 3));

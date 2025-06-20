@@ -7,7 +7,7 @@ const Navbar = () => {
     const {user , Logout} = Userstore();
   return (
    
-    <div className="flex   justify-between max-h-[200px]  bg-neutral " >
+    <div className="flex   justify-between max-h-[200px]  bg-neutral  min-w-screen" >
         
           <Link to={"/chat"}>
              <div className="size-9 rounded-lg flex items-center justify-center">

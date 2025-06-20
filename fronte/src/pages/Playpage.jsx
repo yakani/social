@@ -44,7 +44,7 @@ const Playpage = () => {
   }, [comments , observation]);
   return (
     <div
-      className="flex justify-center min-h-screen  "
+      className="flex justify-center min-h-screen  min-w-screen md:max-h-screen sm:max-w-screen "
       style={{
         backgroundImage: `url(${play.thumbnail})`,
         backgroundSize: "cover",
@@ -56,13 +56,14 @@ const Playpage = () => {
         transitionTimingFunction: "ease-in-out",
       }}
     >
-      <div className="flex flex-col bg-neutral mt-2 rounded-lg p-1 max-h-[95vh]">
-        <div className="rounded-lg m-1 flex justify-center items-center">
+      <div className="flex flex-col bg-neutral mt-2 rounded-lg p-1 ">
+        <div className="rounded-lg m-1 flex justify-center items-center ">
           {play.path ? (
             <Reactplayer
               url={play.path}
               light={play.thumbnail}
               controls={true}
+              width={  350 }
             />
           ) : (
             <img
