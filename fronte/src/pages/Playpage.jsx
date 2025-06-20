@@ -8,7 +8,7 @@ import Messageinput from "../component/Messageinput";
 import { Bookmark, HeartIcon, MessageCircle, X } from "lucide-react";
 import { Userstore } from "../store/user.store";
 const Playpage = () => {
-  const { playingpost, nexplay, posts, previousplay } = Poststore();
+  const { playingpost, nexplay, posts, previousplay ,Algo } = Poststore();
   const { observation, addObservation } = Userstore();
   const { comments, listencomment, stoplisten, getcomments, isloadingcomment } =
     Commentstore();
@@ -17,6 +17,7 @@ const Playpage = () => {
   const [play, setplay] = useState(playingpost);
   const [heart, setheart] = useState(false);
   const [book, setbook] = useState(false);
+  const [list ,setlist] = useState([]);
   const navigate = useNavigate();
   const Go = () => {
     nexplay();
@@ -27,15 +28,20 @@ const Playpage = () => {
   useEffect(() => {
     setplay(playingpost);
     getcomments(playingpost._id);
+    setheart(false);
+    setbook(false);
     window.scrollTo(0, 100);
   }, [playingpost]);
+
   useEffect(() => {
     listencomment(playingpost._id);
     return () => stoplisten();
   }, [listencomment, stoplisten]);
   useEffect(() => {
     setgoal(comments);
-  }, [comments]);
+    setlist(observation.likes);
+    Algo();
+  }, [comments , observation]);
   return (
     <div
       className="flex justify-center min-h-screen  "
@@ -77,9 +83,10 @@ const Playpage = () => {
             <p className="text-xl  "> {play.prompt} </p>
           </div>
         </div>
+        {console.log(list)}
 
         <div className="flex justify-between mt-4">
-          {heart || observation.likes.includes(play._id) ? (
+          {heart || list.includes(play._id) ? (
             <img className="size-7 object-cover m-2 " src="/heart.png" />
           ) : (
             <HeartIcon

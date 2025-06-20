@@ -28,7 +28,7 @@ useEffect(()=>{
   getarralgo();
   Algo();
   Checkauth();
-},[Checkauth]);
+},[Checkauth , getarralgo ,Algo]);
 if( !user && ischecking) return (
 <div className="flex justify-center items-center h-screen">
   <Loader className='size-10 animate-spin text-yellow-500'/>
