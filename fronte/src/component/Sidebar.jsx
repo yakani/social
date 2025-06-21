@@ -62,7 +62,7 @@ const Sidebar = () => {
         {isMobile && (
         <button
           onClick={toggleSidebar}
-          className=" z-50 m-4 btn-lg max-h-[70px] p-2 rounded-md bg-gray-800 text-white md:hidden"
+          className=" fixed z-50 top-4 left-4 p-2 rounded-md bg-gray-800 text-white md:hidden cursor-pointer"
         >
           {isOpen ? (
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -75,11 +75,12 @@ const Sidebar = () => {
           )}
         </button>
       )}
-    <aside    className={`
-          fixed md:static z-40 top-0 left-0  ${isMobile ? 'max-h-[600px]' : ' overflow-y-auto'} 
-          ${isMobile ? 'w-full' : 'w-72'}
-          ${isOpen ? 'translate-x-0 w-72' : '-translate-x-full md:translate-x-0 md:w-20'} 
-          border-r border-base-300 flex flex-col transition-all duration-200 bg-base-100
+      
+    <aside    className={`fixed
+           md:static z-40 top-4 left-0 right-0  ${isMobile ? 'max-h-[600px]' : ' overflow-y-auto'} 
+          ${isMobile ? 'w-full' : 'w-70'}
+          ${isOpen ? 'translate-x-0 w-70' : '-translate-x-full md:translate-x-0 md:w-20'} 
+          border-r border-base-300 flex flex-col transition-all duration-200 bg-base-100 m-2
         `}>
       
       <div>
@@ -129,8 +130,8 @@ const Sidebar = () => {
               if (isMobile) setIsOpen(false);
             } }
             className={`
-              w-full p-3 flex items-center  gap-3 cursor-pointer
-              hover:bg-warning/20 transition-colors
+              w-full p-3 flex  items-center gap-3 cursor-pointer
+              hover:bg-warning/20 transition-colors 
               ${recever?._id === user._id ? " bg-warning/10 ring-1 ring-base-300" : ""}
             `}
           >

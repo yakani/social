@@ -8,8 +8,9 @@ const Chatpage = () => {
   return (
     <div className='min-h-screen bg-neutral'>
       <div className='flex items-center justify-center pt-20 px-4'>
-        <div className='bg-neutral rounded-lg shadow-cl w-full max-w-6xl min-h-screen '>
-          <div className="flex h-full overflow-hidden rounded-lg">
+        <div className='bg-neutral rounded-lg shadow-cl w-full max-w-6xl '>
+          <div className="flex  overflow-hidden rounded-lg">
+            
             <Sidebar/>
             { recever ? <Chatcontainer/>:<Nochat/>}
           </div>

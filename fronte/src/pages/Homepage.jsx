@@ -37,7 +37,7 @@ setnumb(num);
        </div> : all.length == 0 ?<div className='flex justify-center items-center'><p
        className='text-xl text-center text-primary-content p-2 '>
         nothing yet post ...
-       </p></div> : all.length > 0 ? <div className='flex '> {goal.map((t)=><Present key={t._id} post={t}/>)} 
+       </p></div> : all.length > 0 ? <div className='grid grid-cols-2  md:flex'> {goal.map((t)=><Present key={t._id} post={t}/>)} 
        </div> : <Present key={0} post={goal} />
       }
       <div className="join grid grid-cols-2">
