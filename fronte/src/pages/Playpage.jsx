@@ -68,7 +68,7 @@ const Playpage = () => {
           ) : (
             <img
               src={play.thumbnail}
-              className="size-90 rounded-lg object-cover lg:size-40"
+              className="size-90 rounded-lg object-cover"
               style={{
                 transitionTimingFunction: "ease-in-out",
                 transitionDuration: "0.3s",
