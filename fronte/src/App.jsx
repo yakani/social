@@ -18,23 +18,26 @@ import { useThemeStore } from './store/theme.store';
 import Profilepage from './pages/Profilepage';
 const App = () => {
 const { user  , ischecking ,Checkauth ,getsavesvideo ,getobservation} = Userstore();
-const { getposts, getpostsuser , getarralgo , Algo} = Poststore();
+const { getposts, getpostsuser , getarralgo,isloadinalgo ,isloadingpost } = Poststore();
 const { theme} = useThemeStore();
 useEffect(()=>{
   getpostsuser();
   getsavesvideo();
   getobservation();
   getposts();
-  getarralgo();
-  Algo();
   Checkauth();
-},[Checkauth , getarralgo ,Algo]);
-if( !user && ischecking) return (
+},[Checkauth]);
+useEffect(()=>{
+  if(isloadingpost)return;
+  if(user){
+    getarralgo();
+  }
+},[user , getarralgo , isloadingpost ]);
+if( !user && ischecking ) return (
 <div className="flex justify-center items-center h-screen">
   <Loader className='size-10 animate-spin text-yellow-500'/>
 </div>
 );
-
 
   return (
     <div data-theme={theme}>

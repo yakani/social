@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import toast from "react-hot-toast";
 import { axiosInstance } from "../lib/axios";
-import { Userstore } from "./user.store";
+
 
 export const Poststore = create((set, get) => ({
   isloadingpost: false,
@@ -12,9 +12,9 @@ export const Poststore = create((set, get) => ({
   posts: [],
   postuser: [],
   playingpost: null,
-  arralgo: [],
   isloadinalgo: false,
-  numb: parseInt(localStorage.getItem("numb")) || 0,
+  renderchange:false,
+  numb: parseInt(localStorage.getItem("numb")) ? parseInt(localStorage.getItem("numb")) : 0,
 
   setnumb: (num) => {
     localStorage.setItem("numb", String(num));
@@ -114,105 +114,36 @@ export const Poststore = create((set, get) => ({
   },
   setplayingpost: (data) => set({ playingpost: data }),
   getarralgo: async () => {
-    set({ isloadinalgo: true });
-    try {
-      const res = await axiosInstance.get("user/observe");
-      set({ arralgo: res.data });
-    } catch (error) {
-      console.log(error.message);
-    } finally {
-      set({ isloadinalgo: false });
-    }
-  },
-  Algo: () => {
-    //i have to take the data from my observazion  and transform that to an array of prompt to initiate to my data2
-    const { posts, numb } = get();
-    if (posts.length < 10 || get().arralgo.length == 0) return;
-    let previous = [];
-    let arr = [];
-    let maxnum =
+      const { posts, numb  ,playingpost} = get();
+    //if (posts.length < 10 ) return;
+     const n  = playingpost ?  posts.findIndex((t)=>t._id == playingpost._id): -1;
+    const maxnum = n==-1? 
       numb == 0
         ? 0
         : numb * 3 > posts.length - 10
         ? posts.length < 101
           ? posts.length / 2
           : numb * 2
-        : numb * 3;
-    for (let i = 0; i < maxnum; i++) {
-      previous.push(posts[i]);
-    }
-    for (let i = maxnum; i < posts.length; i++) {
-      arr.push(posts[i]);
-    }
-    const data2 = get().arralgo;
-    let final = [];
-    let stock = [];
-    let temp = [];
-    let count = 0;
-    for (let y = 0; y < data2.length; y++) {
-      const element = data2[y];
-      if (y == 0) {
-        for (var i = 0; i < arr.length; i++) {
-          if (arr[i].prompt.includes(element) && count < 3) {
-            count++;
-            final.push(arr[i]);
-          } else if (count > 2) {
-            count = 0;
-            if (stock.length > 0) {
-              final.push(stock.shift());
-            } else {
-              final.push(arr[i]);
-            }
-            if (arr[i].prompt.includes(element)) {
-              count++;
-              final.push(arr[i]);
-            } else {
-              stock.push(arr[i]);
-            }
-          } else {
-            stock.push(arr[i]);
-          }
-        }
-        temp = stock;
+        : numb * 3 : n+1;
+         set({ isloadinalgo: true });
 
-        stock = [];
-      } else {
-        count = 0;
-        for (var i = 0; i < temp.length; i++) {
-          if (temp[i].prompt.includes(element) && count < 3) {
-            count++;
-            final.push(temp[i]);
-          } else if (count > 3) {
-            count = 0;
-            if (stock.length > 0) {
-              final.push(stock.shift());
-            } else {
-              final.push(temp[i]);
-            }
-            if (temp[i].prompt.includes(element)) {
-              count++;
-              final.push(temp[i]);
-            } else {
-              stock.push(temp[i]);
-            }
-          } else {
-            stock.push(temp[i]);
-          }
-        }
-        temp = stock;
-
-        stock = y == data2.length - 1 ? stock : [];
-      }
+    try {
+      const res = await axiosInstance.get(`user/observe?max=${maxnum}`);
+      set({ posts: res.data });
+    } catch (error) {
+      console.log(error.message);
+    } finally {
+      set({ isloadinalgo: false });
     }
-    final = stock.length > 0 ? final.concat(stock) : final;
-    final = previous.concat(final);
-    set({ posts: final });
   },
   addobserve: async (data) => {
+    set({renderchange:true});
     try {
       const res = await axiosInstance.post("user/observe", data);
     } catch (error) {
       console.error(error.message);
+    }finally{
+      set({renderchange:false});
     }
   },
 }));

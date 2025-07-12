@@ -8,7 +8,7 @@ import Messageinput from "../component/Messageinput";
 import { Bookmark, HeartIcon, MessageCircle, X } from "lucide-react";
 import { Userstore } from "../store/user.store";
 const Playpage = () => {
-  const { playingpost, nexplay, posts, previousplay ,Algo } = Poststore();
+  const { playingpost, nexplay, posts, previousplay  ,getarralgo , setnumb ,numb} = Poststore();
   const { observation, addObservation } = Userstore();
   const { comments, listencomment, stoplisten, getcomments, isloadingcomment } =
     Commentstore();
@@ -40,8 +40,20 @@ const Playpage = () => {
   useEffect(() => {
     setgoal(comments);
     setlist(observation.likes);
-    Algo();
   }, [comments , observation]);
+  
+    const handleLike = async () => {
+    try {
+      await addObservation({ likes: play._id });
+      setheart(true);
+      // Call getarralgo after liking
+      await getarralgo();
+      const n = posts.findIndex(t=>t._id == playingpost._id);
+      setnumb(n == -1 ? numb : Math.floor(n/3) );
+    } catch (error) {
+      console.error("Error liking post:", error);
+    }
+  };
   return (
     <div
       className="flex justify-center min-h-screen  min-w-screen md:max-h-screen sm:max-w-screen "
@@ -92,10 +104,7 @@ const Playpage = () => {
           ) : (
             <HeartIcon
               className="size-7 m-2 text-warning cursor-pointer"
-              onClick={() => {
-                addObservation({ likes: play._id });
-                setheart(true);
-              }}
+              onClick={()=>handleLike() }
             />
           )}
           <label htmlFor="my_modal_7">
