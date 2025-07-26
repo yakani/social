@@ -37,11 +37,11 @@ useEffect(()=>{
       <div className="flex-1 overflow-y-auto space-y-4 bg-primary/10">
           {messages.map((msg)=>
           <div key={msg._id}
-          className={`chat ${msg.sender == user._id ? "chat-end":"chat-start"}`}
+          className={`chat ${msg.sender?._id === user._id ? "chat-end":"chat-start"}`}
           ref={messageEndRef}>
             <div className="chat-file avatar">
               <div className="size-10 rounded-full border">
-                <img src={msg.sender == user._id ? user.avatar : recever.avatar} alt="" />
+                <img src={msg.sender?.avatar} alt="" />
               </div>
             </div>
             <div className='chat-header mb-1 cursor-pointer' onMouseEnter={()=>setconn(true)} onMouseLeave={()=>setconn(false)} >

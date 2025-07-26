@@ -28,7 +28,14 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.authenticate('session'));
 const corsoption = {
-    origin: [process.env.CLIENT_URL],
+    origin: [
+    process.env.CLIENT_URL, // Your React/Web App development origin
+
+  process.env.APP, // Example: Replace XXX with your actual IP, 19000 is a common Expo port
+   process.env.APP2, // Another common Expo port
+   process.env.APP3, // For Expo Go and dev clients (more flexible but be careful)
+  null 
+    ],
     methods: ["POST", "GET", "PUT", "DELETE",, "OPTIONS"], 
     credentials: true,
     allowedHeaders: ['Content-Type'],
@@ -43,6 +50,6 @@ app.use('/follow',followerroute);
 connetedDB();
 app.use(errorhandeler);
 app.use(notfound);
-server.listen(7000, () => {
+server.listen(7000,'0.0.0.0', () => {
   console.log('Server is running on port 7000');
 });

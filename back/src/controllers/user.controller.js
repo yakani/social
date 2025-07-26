@@ -2,8 +2,10 @@ import asyncHandler from 'express-async-handler';
 import User from '../models/user.model.js';
 import generatetoken from '../midlleware/generate.token.js';
 import cloudinary from '../lib/cloudinary.js';
+import generateTokenApp from '../midlleware/generte.app.token.js';
 const Signup = asyncHandler(async (req, res) =>{
     const { name, email, password } = req.body;
+   
     const userExists = await User.findOne({ email });
     if (userExists) {
       return  res.status(400).json({ message: 'User already exists' });
@@ -18,6 +20,17 @@ const Signup = asyncHandler(async (req, res) =>{
           res.status(400).json({ message: 'error aumit' });
         } 
         generatetoken(res, user._id);
+        if(req.query?.app){
+         const  tokens = generateTokenApp(user._id);
+            return res.status(201).json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            avatar: user.avatar,
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken
+            });
+        }
         res.status(201).json(user);
     } catch (error) {
         res.status(500).json({ message: error });
@@ -32,6 +45,17 @@ const Login = asyncHandler(async (req, res) => {
     try {
         if (!(await user.matchPasswords(password))) {
              res.status(401).json({ message: 'Invalid email or password' });
+        }
+          if(req.query?.app){
+         const  tokens = generateTokenApp(user._id);
+            return res.status(201).json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            avatar: user.avatar,
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken
+            });
         }
          generatetoken(res, user._id);
          res.status(200).json(user);

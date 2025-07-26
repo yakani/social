@@ -74,7 +74,7 @@ const getFileByuser = asyncHandler(async (req,res)=>{
        try {
         
         const id =  req.user._id;
-        const file = await File.find({ sender : id }).populate('sender','avatar name email');
+        const file = await File.find({ sender : id }).populate('sender','avatar name email').sort({createdAt:-1});
         res.status(201).json(file);
        } catch (error) {
         console.log(error);
@@ -84,7 +84,7 @@ const getFileByvisitor = asyncHandler(async (req,res)=>{
        try {
         
         const {id } =  req.params;
-        const file = await File.find({ sender : id }).populate('sender','avatar name email');
+        const file = await File.find({ sender : id }).populate('sender','avatar name email').sort({createdAt:-1});
         res.status(201).json(file);
        } catch (error) {
       
@@ -107,10 +107,23 @@ const deleteFile = asyncHandler(async (req,res)=>{
         res.status(500).json({message:error});
     }
 });
+const getFileById = asyncHandler(async (req,res)=>{
+    const { id } = req.params;
+    try {
+        const file = await File.findById(id).populate('sender','avatar name ');
+        if(!file){
+            return res.status(404).json({message:"file not found"});
+        }
+        res.status(201).json(file);
+    } catch (error) {
+        res.status(500).json({message:error});
+    }
+});
 export {
     createFile,
     getAllFiles,
     getFileByuser,
     getFileByvisitor,
+    getFileById,
     deleteFile
 }

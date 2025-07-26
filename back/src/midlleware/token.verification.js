@@ -4,21 +4,38 @@ import User from '../models/user.model.js'
 const protect=asyncHandler( async (req, res, next)=>{
 let token;
 let refresh = req.cookies.refresh ;
-token=req.cookies.jwt;
-//console.log(token);
+if(req.query?.app){
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    try {
+      token = req.headers.authorization.split(' ')[1];     
+      const decoded = jwt.verify(token, process.env.jwts);
+      req.user = await User.findById(decoded.id).select('-password');
+      next();
+    } catch (error) {
+      res.status(401);
+      throw new Error('Not authorized, token failed');
+    }
+  }
+    if (!token) {
+    res.status(401);
+    throw new Error('Not authorized, no token');
+  }
+  return;
 
+}
 
 try{
 	if(req.cookies.refresh)
 	{
 		const decode = jwt.verify(refresh,process.env.refresh);
 		//console.log(decode.id);
-		if(token != decode.id){throw new Error('timeout login back');}
+		if(req.cookies.jwt != decode.id){throw new Error('timeout login back');}
 		
 	}
 	if (req.cookies.jwt) {
-		const decoded= jwt.verify(token, process.env.jwts);
-		req.user= await User.findById(decoded.id).select('-password');
+		token = req.cookies.jwt;
+		const decoded = jwt.verify(token, process.env.jwts);
+		req.user = await User.findById(decoded.id).select('-password');
 		next();
 
 }else{

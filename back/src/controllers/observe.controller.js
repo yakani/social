@@ -1,6 +1,7 @@
 import Observe from "../models/observe.model.js";
 import asyncHandler from "express-async-handler";
 import File from "../models/file.model.js";
+import mongoose from "mongoose";
 const addObserve = asyncHandler(async (req, res) => {
   const { likes, save, dislikes } = req.body;
   const userId = req.user._id;
@@ -180,4 +181,65 @@ const Algo = async (arr, maxnum, Id) => {
     throw new Error(e);
   }
 };
-export { addObserve, getObservation, getVisualization, getSavesfile };
+
+const GetfileObserve = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  let fileId;
+  try {
+    // Ensure id is an ObjectId for accurate matching
+    fileId = mongoose.Types.ObjectId.isValid(id) ? new mongoose.Types.ObjectId(id) : id;
+
+    const observation = await Observe.aggregate([
+      {
+        $group: {
+          _id: null,
+          likesCount: {
+            $sum: {
+              $size: {
+                $filter: {
+                  input: "$likes",
+                  as: "like",
+                  cond: { $eq: ["$$like", fileId] }
+                }
+              }
+            }
+          },
+          savesCount: {
+            $sum: {
+              $size: {
+                $filter: {
+                  input: "$saves",
+                  as: "save",
+                  cond: { $eq: ["$$save", fileId] }
+                }
+              }
+            }
+          },
+          seeCounts: {
+            $sum: {
+              $cond: [
+                {
+                  $or: [
+                    { $in: [fileId, "$likes"] },
+                    { $in: [fileId, "$dislikes"] },
+                    { $in: [fileId, "$saves"] }
+                  ]
+                },
+                1,
+                0
+              ]
+            }
+          }
+        }
+      }
+    ]);
+
+    // Always return counts, even if zero
+    const result = observation[0] || { likesCount: 0, savesCount: 0, seeCounts: 0 };
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message || error });
+  }
+});
+
+export { addObserve, getObservation, getVisualization, getSavesfile ,GetfileObserve };
