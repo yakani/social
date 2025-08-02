@@ -21,6 +21,10 @@ const fileSchema = new mongoose.Schema({
         type: String,
         default:""
     },
+    mediaId:{
+        type:String,
+        default:null
+    },
     createdAt:{
         type: Date,
         default: Date.now(),

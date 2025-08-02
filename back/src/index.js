@@ -30,7 +30,7 @@ app.use(passport.authenticate('session'));
 const corsoption = {
     origin: [
     process.env.CLIENT_URL, // Your React/Web App development origin
-
+"https://api.sightengine.com",
   process.env.APP, // Example: Replace XXX with your actual IP, 19000 is a common Expo port
    process.env.APP2, // Another common Expo port
    process.env.APP3, // For Expo Go and dev clients (more flexible but be careful)

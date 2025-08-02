@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import Message from "../models/message.model.js";
 import cloudinary from "../lib/cloudinary.js";
 import { io, getusersocketid } from "../lib/socket.js";
+import { moderateMedia } from "../lib/Moderation.js";
 
 const createMessage = asyncHandler(async (req, res) => {
   const { content } = req.body;
@@ -15,6 +16,19 @@ const createMessage = asyncHandler(async (req, res) => {
   try {
     let fileurl = null;
     if (file) {
+      const moderationResult = await moderateMedia(
+        file.buffer,
+        file.fileName,
+        file.mimetype,
+        process.env.SIGHTENGINE_USER_ID,
+        process.env.SIGHTENGINE_API_SECRET,
+        0
+      );
+      if (moderationResult.summary?.action === "reject") {
+        return res
+          .status(400)
+          .json({ message: "Content rejected by moderation." });
+      }
       const result = await new Promise((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
           {
