@@ -4,104 +4,164 @@ import File from "../models/file.model.js";
 import { moderateMedia } from "../lib/Moderation.js";
 import { getVideoDurationInSeconds } from "get-video-duration";
 import { io } from "../lib/socket.js";
+import fs from 'fs';
+import path from 'path';
+
 const createFile = asyncHandler(async (req, res) => {
   const { prompt, title } = req.body;
   let fileurl = null;
-  let thumbailUrl = null;
+  let thumbnailUrl = null;
+  let tmpPath = null;
+  
+  // Validate required fields
+  if (!req.files?.file?.[0]) {
+    return res.status(400).json({ message: "No file provided" });
+  }
+  
   const file = req.files.file[0];
-
   let duration = 0;
-  if (file?.mimetype.startsWith("video/")) {
-    // Save buffer to temp file, then get duration
-    const tmpPath = `./tmp/${Date.now()}_${file.originalname}`;
-    await fs.promises.writeFile(tmpPath, file.buffer);
-    duration = await getVideoDurationInSeconds(tmpPath);
-    await fs.promises.unlink(tmpPath); // Clean up
-  }
-  let moderationResult;
-  // console.log(file);
-  try {
-    moderationResult = await moderateMedia(
-      file.buffer,
-      file.originalname,
-      file.mimetype,
-      process.env.SIGHTENGINE_USER_ID,
-      process.env.SIGHTENGINE_API_SECRET,
-      duration
-    );
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "error occur in control process" });
-  }
-  // You can adjust this check based on Sightengine response
-  if (moderationResult.summary?.action === "reject") {
-    return res.status(400).json({ message: "Content rejected by moderation." });
-  }
-  const mediaId = moderationResult?.request?.id || null;
-  if (file.mimetype.startsWith("image")) {
-    const uploadimg = await new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          resource_type: "auto",
-          folder: "uploads",
-        },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      );
 
-      uploadStream.end(file.buffer);
-    });
-    thumbailUrl = uploadimg.secure_url;
-  } else {
-    const result = await new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          resource_type: "auto",
-          folder: "uploads",
-        },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      );
-
-      uploadStream.end(file.buffer);
-    });
-    fileurl = result.secure_url;
-    const thumbnail = result.public_id.replace(/\.[^/.]+$/, ""); // Remove extension
-    thumbailUrl = cloudinary.url(thumbnail, {
-      resource_type: "video",
-      format: "jpg",
-      transformation: [
-        { width: 300, height: 300, crop: "fill" },
-        { quality: "auto" },
-      ],
-    });
-  }
   try {
-    const file = await File.create({
+    // Handle video duration calculation
+    if (file?.mimetype.startsWith("video/")) {
+      // Create temp directory if it doesn't exist
+      const tmpDir = './tmp';
+      if (!fs.existsSync(tmpDir)) {
+        fs.mkdirSync(tmpDir, { recursive: true });
+      }
+      
+      // Create proper file path (not directory)
+      tmpPath = path.join(tmpDir, `${Date.now()}_${file.originalname}`);
+      
+      try {
+        await fs.promises.writeFile(tmpPath, file.buffer);
+        duration = await getVideoDurationInSeconds(tmpPath);
+      } catch (error) {
+        console.error("Error processing video duration:", error);
+        throw new Error("Failed to process video file");
+      }
+    }
+
+    // Content moderation
+    let moderationResult;
+    try {
+      moderationResult = await moderateMedia(
+        file.buffer,
+        file.originalname,
+        file.mimetype,
+        process.env.SIGHTENGINE_USER_ID,
+        process.env.SIGHTENGINE_API_SECRET,
+        duration
+      );
+    } catch (error) {
+      console.error("Moderation error:", error);
+      return res.status(500).json({ message: "Content moderation failed" });
+    }
+
+    // Check moderation result
+    if (moderationResult.summary?.action === "reject") {
+      return res.status(400).json({ 
+        message: "Content rejected by moderation.",
+        reason: moderationResult.summary?.reason || "Content policy violation"
+      });
+    }
+
+    let mediaId = moderationResult?.request?.id || null;
+
+    // Upload to Cloudinary
+    if (file.mimetype.startsWith("image/")) {
+      // For images, use the uploaded image as both file and thumbnail
+      mediaId = null;
+      const uploadResult = await uploadToCloudinary(file.buffer, "image");
+      fileurl = uploadResult.secure_url;
+      thumbnailUrl = uploadResult.secure_url;
+    } else if (file.mimetype.startsWith("video/")) {
+      // For videos, upload video and generate thumbnail
+      const uploadResult = await uploadToCloudinary(file.buffer, "video");
+      fileurl = uploadResult.secure_url;
+      
+      // Generate video thumbnail
+      const thumbnail = uploadResult.public_id.replace(/\.[^/.]+$/, "");
+      thumbnailUrl = cloudinary.url(thumbnail, {
+        resource_type: "video",
+        format: "jpg",
+        transformation: [
+          { width: 300, height: 300, crop: "fill" },
+          { quality: "auto" },
+        ],
+      });
+
+    } else {
+       mediaId = null;
+      // For other file types (documents, etc.)
+      const uploadResult = await uploadToCloudinary(file.buffer, "raw");
+      fileurl = uploadResult.secure_url;
+      // You might want to set a default thumbnail for documents
+      thumbnailUrl = null;
+    }
+
+    // Save to database
+    const newFileRecord = await File.create({
       sender: req.user._id,
       path: fileurl,
-      thumbnail: thumbailUrl,
+      thumbnail: thumbnailUrl,
       prompt,
       title,
       mediaId,
+      duration: duration || null,
     });
-    if (!file) {
-      return res.status(400).json({ message: "failed to insert" });
+
+    if (!newFileRecord) {
+      return res.status(400).json({ message: "Failed to save file record" });
     }
-    const newfile = await File.findById(file._id).populate(
+
+    // Populate sender information
+    const populatedFile = await File.findById(newFileRecord._id).populate(
       "sender",
       "name avatar"
     );
-    res.status(201).json(newfile);
+
+    res.status(201).json(populatedFile);
+
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: error });
+    console.error("File upload error:", error);
+    res.status(500).json({ 
+      message: "File upload failed", 
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined 
+    });
+  } finally {
+    // Clean up temporary file
+    if (tmpPath && fs.existsSync(tmpPath)) {
+      try {
+        await fs.promises.unlink(tmpPath);
+      } catch (cleanupError) {
+        console.error("Failed to clean up temp file:", cleanupError);
+      }
+    }
   }
 });
+
+// Helper function to upload to Cloudinary
+const uploadToCloudinary = (buffer, resourceType = "auto") => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        resource_type: resourceType,
+        folder: "uploads",
+      },
+      (error, result) => {
+        if (error) {
+          console.error("Cloudinary upload error:", error);
+          reject(new Error("Failed to upload to Cloudinary"));
+        } else {
+          resolve(result);
+        }
+      }
+    );
+    uploadStream.end(buffer);
+  });
+};
+
 const getFileByuser = asyncHandler(async (req, res) => {
   try {
     const id = req.user._id;
