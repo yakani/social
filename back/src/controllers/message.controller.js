@@ -9,9 +9,7 @@ const createMessage = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const text = content ? content : null;
   const file = req.files.file
-    ? req.files.file.length > 1
-      ? req.files.file
-      : req.files.file[0]
+    ?  req.files.file[0]
     : null;
   try {
     let fileurl = null;
