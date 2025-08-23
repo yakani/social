@@ -5,12 +5,12 @@ import {createFile ,  getFileByuser, deleteFile, getAllFiles, getFileById, getFi
 import upload from '../lib/multer.js';
 const router = Router();
 router.post('/',protect,upload, createFile);
+router.post('/moderation',CallbackResponse);
 router.get('/user',protect,getFileByuser);
 router.get('/visitor/:id',protect,getFileByvisitor); // Assuming you want to get files by visitor ID
 router.get('/',protect,getAllFiles);
 router.get('/:id',protect,getFileById); 
 router.get('/observe/:id',protect,GetfileObserve);
-router.get('/moderation',CallbackResponse);
 router.delete('/:id',protect,deleteFile);
 
 export default router;
