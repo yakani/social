@@ -12,7 +12,7 @@ const createCOmment = asyncHandler(async (req, res) => {
   if (image) {
     const moderationResult = await moderateMedia(
       image.buffer,
-      image.fileName,
+      image.originalname,
       image.mimetype,
       process.env.SIGHTENGINE_USER_ID,
       process.env.SIGHTENGINE_API_SECRET,

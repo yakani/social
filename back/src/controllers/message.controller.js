@@ -16,7 +16,7 @@ const createMessage = asyncHandler(async (req, res) => {
     if (file) {
       const moderationResult = await moderateMedia(
         file.buffer,
-        file.fileName,
+        file.originalname,
         file.mimetype,
         process.env.SIGHTENGINE_USER_ID,
         process.env.SIGHTENGINE_API_SECRET,
@@ -59,6 +59,7 @@ const createMessage = asyncHandler(async (req, res) => {
     }
     res.status(201).json(message);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error });
   }
 });
