@@ -51,8 +51,7 @@ export const Messagestore = create((set,get)=>({
         if(!recever) return ;
        const sock =  Userstore.getState().socket;
        sock.on("msg",(msg,name)=>{
-       // console.log("yes");
-        if(msg.sender != recever._id){
+        if(msg.sender?._id != recever._id){
             
             toast.success(`${name} : ${msg.content ? msg.content : "image"}`);
             return;

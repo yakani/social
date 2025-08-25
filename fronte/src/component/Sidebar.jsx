@@ -33,6 +33,7 @@ const Sidebar = () => {
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
     useEffect(() => {
+      console.log(onlineuser);
     const filtered = showOnlineOnly
       ? alluser.filter((user) => onlineuser.includes(user._id))
       : alluser;
