@@ -2,7 +2,7 @@ import generatetoken from '../midlleware/generate.token.js';
 import asyncHandler from 'express-async-handler';
 import generateTokenApp from '../midlleware/generte.app.token.js';
 const redirectClient = asyncHandler(async(req,res)=>{
-    const {app} = req.body;
+    const app = req.body?.app || null;
     if(app){
         const token = generateTokenApp(req.user._id);
         return res.status(200).json({
