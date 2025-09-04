@@ -8,16 +8,9 @@ const redirectClient = asyncHandler(async(req,res)=>{
     res.redirect(`${process.env.CLIENT_URL}`)
 });
 const googleTokenAuth =  asyncHandler( async (req, res) => {
-  const { accessToken } = req.body;
-  const client = new OAuth2Client(process.env.clientID);
-
-  try {
-    const ticket = await client.verifyIdToken({
-      idToken: accessToken,
-      audience: process.env.clientID,
-    });
-    const payload = ticket.getPayload();
-    const email = payload.email;
+  const { name , email , id } = req.body;
+  
+  try {  
     let user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -35,16 +28,9 @@ const googleTokenAuth =  asyncHandler( async (req, res) => {
   }
 });
 const SignupToken = asyncHandler(async (req, res) => {
-  const { accessToken } = req.body;
-  const client = new OAuth2Client(process.env.clientID);
+  const { name , email , id } = req.body;
 
   try {
-    const ticket = await client.verifyIdToken({
-      idToken: accessToken,
-      audience: process.env.clientID,
-    });
-    const payload = ticket.getPayload();
-    const email = payload.email;
     let user = await User.findOne({ email });
 
     if (user) {
@@ -52,8 +38,9 @@ const SignupToken = asyncHandler(async (req, res) => {
     }
     user = await User.create({
         email,
-        name: payload.name,
+        name,
         password: "password",
+        googleId:id
       });
     const token = generateTokenApp(user._id);
     user = {
