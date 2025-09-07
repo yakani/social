@@ -9,7 +9,7 @@ if(req.query?.app){
     try {
       token = req.headers.authorization.split(' ')[1];     
       const decoded = jwt.verify(token, process.env.jwts);
-      req.user = await User.findById(decoded.id).select('-password');
+      req.user = await User.findById(decoded.id).select('-password -googleId');
       next();
     } catch (error) {
       res.status(401);
