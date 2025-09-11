@@ -24,6 +24,7 @@ const googleTokenAuth =  asyncHandler( async (req, res) => {
     res.status(200).json(user);
   } catch (error) {
     res.status(401).json({ message: "Invalid Google token", error });
+    console.log(error);
   }
 });
 const SignupToken = asyncHandler(async (req, res) => {
@@ -52,6 +53,7 @@ const SignupToken = asyncHandler(async (req, res) => {
     res.status(200).json(user);
   } catch (error) {
     res.status(401).json({ message: "Invalid Google token", error });
+     console.log(error);
   }
 });
 export {
