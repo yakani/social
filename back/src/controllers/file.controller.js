@@ -51,7 +51,8 @@ const createFile = asyncHandler(async (req, res) => {
         file.mimetype,
         process.env.SIGHTENGINE_USER_ID,
         process.env.SIGHTENGINE_API_SECRET,
-        duration
+        duration,
+        file.size
       );
     } catch (error) {
       console.error("Moderation error:", error);
@@ -97,7 +98,7 @@ const createFile = asyncHandler(async (req, res) => {
       const uploadResult = await uploadToCloudinary(file.buffer, "raw");
       fileurl = uploadResult.secure_url;
       // You might want to set a default thumbnail for documents
-      thumbnailUrl = null;
+      
     }
 
     // Save to database
@@ -191,7 +192,7 @@ const getAllFiles = asyncHandler(async (req, res) => {
     $and: [{ sender: { $ne: req.user._id } }, { mediaId: null }],
   }).populate("sender", "avatar name email");
 
-  res.status(201).json(file ? file : []);
+  res.status(201).json(file || []);
 });
 const deleteFile = asyncHandler(async (req, res) => {
   const { id } = req.params;
