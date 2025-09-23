@@ -1,7 +1,7 @@
 import axios from "axios";
 import FormData from "form-data";
 
-const MAX_DIRECT_SIZE = 49 * 1024 * 1024; // 25MB limit for direct API
+const MAX_DIRECT_SIZE = 50 * 1024 * 1024; // 50MB limit for direct API
 
 async function handleLargeFile(buffer, name, mimetype, userId, apiSecret, duration) {
   const uploadData = new FormData();
@@ -10,15 +10,29 @@ async function handleLargeFile(buffer, name, mimetype, userId, apiSecret, durati
   uploadData.append("api_secret", apiSecret);
 
   // First upload the file
-  const uploadResponse = await axios.post(
-    "https://api.sightengine.com/1.0/video/upload.json",
-    uploadData,
-    { headers: uploadData.getHeaders() }
+  const uploadResponse = await axios.get(
+    "https://api.sightengine.com/1.0/upload/create-video.json",
+    {
+      params: {
+        'api_user': userId,
+        'api_secret': apiSecret
+      }
+    }
   );
-
+const { url: uploadUrl, expires } = uploadResponse.data.upload;
+    const { id: mediaId } = uploadResponse.data.media;
+const uploadFileResponse = await axios.put(uploadUrl, buffer, {
+      headers: {
+        'Content-Type': mimetype,
+        'Content-Length': buffer.length
+      },
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
+      timeout: 300000 // 5 minutes timeout
+    });
   // Now moderate using the uploaded file's URL
   const moderationData = new FormData();
-  moderationData.append("media_url", uploadResponse.data.media.url);
+  moderationData.append("media_id", mediaId);
   moderationData.append("workflow", mimetype.startsWith("video/")
     ? "wfl_iVgsawcIGihrv6l7e6ziF"
     : "wfl_iVgpt3JDFmBOfzFfRPGR1");
